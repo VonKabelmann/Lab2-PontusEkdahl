@@ -38,7 +38,7 @@ namespace Lab2_PontusEkdahl
             GBP
         }
 
-        public Currencies Currency { get; private set; }
+        public Currencies Currency { get; set; }
 
         public Product(string name, double price)
         {

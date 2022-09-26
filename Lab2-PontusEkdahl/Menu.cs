@@ -8,33 +8,23 @@ using System.Threading.Tasks;
 
 namespace Lab2_PontusEkdahl
 {
-    public abstract class Menu
+    public class Menu
     {
-        private enum MenuPages
+        List<Option> _startOptions = new List<Option>()
         {
-            StartMenu,
-            LoginName,
-            LoginPassword,
-            RegisterName,
-            RegisterPassword,
-            MainMenu,
-            Shop,
-            Cart,
-            Cashier
-        }
+            new Option("Login", new Action(Menu.GetMenu)),
+            new Option("Register", new Action(Menu.GetMenu))
+        };
+        List<Option> _mainOptions = new List<Option>()
+        {
+            new Option("Shop", new Action(Menu.GetMenu)),
+            new Option("Check cart", new Action(Menu.GetMenu)),
+            new Option("Cashier", new Action(Menu.GetMenu))
+        };
         public static void GetMenu()
         {
+            Console.Clear();
             Console.WriteLine("Welcome! Would you like to login or register?");
         }
-    }
-
-    public class LoginMenu : Menu
-    {
-        
-    }
-
-    public class MainMenu : Menu
-    {
-        
     }
 }

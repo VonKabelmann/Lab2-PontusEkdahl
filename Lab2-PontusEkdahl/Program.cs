@@ -1,8 +1,5 @@
 ﻿using Lab2_PontusEkdahl;
 
-Product product1 = new Product("Banana", 95);
+Product product1 = new Product("Banana", 113);
+product1.Currency = Product.Currencies.USD;
 Console.WriteLine(product1);
-
-string testString = " 34";
-int testInt = Int32.Parse(testString);
-Console.WriteLine(testInt);
