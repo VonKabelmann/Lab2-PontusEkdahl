@@ -1,0 +1,5 @@
+Welcome! Would you like to login or register?
+
+Press UP ARROW or DOWN ARROW to navigate the menu.
+Press ENTER to confirm selection.
+ 

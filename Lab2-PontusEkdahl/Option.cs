@@ -3,11 +3,11 @@
 public class Option
 {
     public string Name { get; }
-    public Action Selected { get; }
+    public Menu.MenuItems MenuItem { get; }
 
-    public Option(string name, Action selected)
+    public Option(string name, Menu.MenuItems menuItem)
     {
         Name = name;
-        Selected = selected;
+        MenuItem = menuItem;
     }
 }
