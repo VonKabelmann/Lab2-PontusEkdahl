@@ -6,4 +6,8 @@ public class BasicMember : Customer
     {
         Discount = 0;
     }
+    public override string ToString()
+    {
+        return $"{base.ToString()}, Tier: Basic";
+    }
 }

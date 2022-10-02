@@ -31,6 +31,19 @@ namespace Lab2_PontusEkdahl.Customers
             Password = password;
         }
 
+        public enum MembershipTier
+        {
+            Unassigned,
+            Basic,
+            Bronze,
+            Silver,
+            Gold
+        }
         public int Discount { get; protected set; }
+
+        public override string ToString()
+        {
+            return $"Name: {Name}, Password: {Password}";
+        }
     }
 }

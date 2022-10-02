@@ -6,4 +6,8 @@ public class SilverMember : Customer
     {
         Discount = 10;
     }
+    public override string ToString()
+    {
+        return $"{base.ToString()}, Tier: Silver";
+    }
 }

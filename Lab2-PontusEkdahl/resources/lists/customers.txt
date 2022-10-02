@@ -1,0 +1,3 @@
+Name: Knatte, Password: 123, Tier: Bronze
+Name: Fnatte, Password: 321, Tier: Silver
+Name: Tjatte, Password: 213, Tier: Gold

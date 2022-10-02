@@ -6,4 +6,8 @@ public class GoldMember : Customer
     {
         Discount = 15;
     }
+    public override string ToString()
+    {
+        return $"{base.ToString()}, Tier: Gold";
+    }
 }

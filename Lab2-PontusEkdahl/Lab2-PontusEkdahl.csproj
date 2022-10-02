@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="resources\lists\" />
     <Folder Include="resources\menutexts\" />
   </ItemGroup>
 
