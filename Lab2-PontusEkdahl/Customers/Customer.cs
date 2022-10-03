@@ -29,6 +29,7 @@ namespace Lab2_PontusEkdahl.Customers
         {
             Name = name;
             Password = password;
+            ShoppingCart = new List<Product>();
         }
 
         public enum MembershipTier
@@ -43,7 +44,41 @@ namespace Lab2_PontusEkdahl.Customers
 
         public override string ToString()
         {
-            return $"Name: {Name}, Password: {Password}";
+            var returnString = $"Name: {Name}, Password: {Password}";
+            return returnString;
+        }
+
+        public static MembershipTier GetTierFromString(string tier)
+        {
+            switch (tier)
+            {
+                case "Basic":
+                    return Customer.MembershipTier.Basic;
+                case "Bronze":
+                    return Customer.MembershipTier.Bronze;
+                case "Silver":
+                    return Customer.MembershipTier.Silver;
+                case "Gold":
+                    return Customer.MembershipTier.Gold;
+                default:
+                    return Customer.MembershipTier.Unassigned;
+            }
+        }
+        public static Customer CreateCustomer(string name, string pw, Customer.MembershipTier tier)
+        {
+            switch (tier)
+            {
+                case Customer.MembershipTier.Basic:
+                    return new BasicMember(name, pw);
+                case Customer.MembershipTier.Bronze:
+                    return new BronzeMember(name, pw);
+                case Customer.MembershipTier.Silver:
+                    return new SilverMember(name, pw);
+                case Customer.MembershipTier.Gold:
+                    return new GoldMember(name, pw);
+                default:
+                    return new BasicMember("invalid", "invalid");
+            }
         }
     }
 }

@@ -98,90 +98,45 @@ namespace Lab2_PontusEkdahl
 
         public static void RegisterMenu()
         {
-            var inputInvalid = true;
-            var accountName = String.Empty;
-            var accountPassword = string.Empty;
-            
+            var inputName = String.Empty;
+            var inputPassword = string.Empty;
+
             Console.Clear();
 
             Console.Write("Please enter your account name: ");
-            accountName = Console.ReadLine();
-
-            if (CheckIfInputExists(accountName, MenuItems.Register))
+            inputName = Console.ReadLine();
+            if (CheckIfNameExists(inputName) || String.IsNullOrEmpty(inputName))
             {
-                return;
-            }
-
-            if (inputInvalid = CheckIfInputIsEmpty(accountName))
-            {
+                Console.Clear();
+                Console.WriteLine("Name is not available or empty.");
+                Thread.Sleep(1500);
                 return;
             }
 
             Console.Write("Please enter account password: ");
-            accountPassword = Console.ReadLine();
-
-            if (CheckIfInputIsEmpty(accountPassword))
+            inputPassword = Console.ReadLine();
+            if (String.IsNullOrEmpty(inputPassword))
             {
+                Console.Clear();
+                Console.WriteLine("Password must not be empty.");
+                Thread.Sleep(1500);
                 return;
             }
-            
+
             Console.WriteLine("Please select your membership tier.");
             Console.WriteLine("'N' = NONE | 'B' = BRONZE | 'S' = SILVER | 'G' = GOLD");
             var tier = RegisterTier();
-            SaveCustomerToFile(accountName, accountPassword, tier);
+            SaveCustomerToFile(inputName, inputPassword, tier);
         }
-
-        public static bool CheckIfInputIsEmpty(string input)
-        {
-            if (input == string.Empty)
-            {
-                Console.WriteLine("You must enter something.");
-                Thread.Sleep(1000);
-                return true;
-            }
-            return false;
-        }
-
-        public static bool CheckIfInputExists(string input, MenuItems inputType)
+        
+        public static bool CheckIfNameExists(string input)
         {
             var customerList = GetCustomersFromFile();
-            foreach (var customer in customerList)
-            {
-                if (customer.Name.ToLower() == input.ToLower())
-                {
-                    if (inputType == MenuItems.Register)
-                    {
-                        Console.WriteLine("That name is already taken.");
-                        Thread.Sleep(1000);
-                    }
-                    return true;
-                }
-            }
-
-            if (inputType == MenuItems.Login)
-            {
-                Console.WriteLine("No account with that name exists.");
-                Thread.Sleep(1000);
-            }
-            return false;
+            var inputExists = customerList.Any(a => a.Name == input);
+            return inputExists;
         }
+        
 
-        public static Customer CreateCustomer(string name, string pw, Customer.MembershipTier tier)
-        {
-            switch (tier)
-            {
-                case Customer.MembershipTier.Basic:
-                    return new BasicMember(name, pw);
-                case Customer.MembershipTier.Bronze:
-                    return new BronzeMember(name, pw);
-                case Customer.MembershipTier.Silver:
-                    return new SilverMember(name, pw);
-                case Customer.MembershipTier.Gold:
-                    return new GoldMember(name, pw);
-                default:
-                    return new BasicMember("invalid", "invalid");
-            }
-        }
         public static Customer.MembershipTier RegisterTier()
         {
             ConsoleKeyInfo keyInfo;
@@ -217,34 +172,19 @@ namespace Lab2_PontusEkdahl
             foreach (var str in customersArr)
             {
                 var customerSplit = str.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-                var tier = GetTierFromString(customerSplit[2]);
-                var customer = Menu.CreateCustomer(customerSplit[0], customerSplit[1], tier);
+                var tier = Customer.GetTierFromString(customerSplit[2]);
+                var customer = Customer.CreateCustomer(customerSplit[0], customerSplit[1], tier);
                 customerList.Add(customer);
             }
             return customerList;
         }
 
-        public static Customer.MembershipTier GetTierFromString(string tier)
-        {
-            switch (tier)
-            {
-                case "Basic":
-                    return Customer.MembershipTier.Basic;
-                case "Bronze":
-                    return Customer.MembershipTier.Bronze;
-                case "Silver":
-                    return Customer.MembershipTier.Silver;
-                case "Gold":
-                    return Customer.MembershipTier.Gold;
-                default:
-                    return Customer.MembershipTier.Unassigned;
-            }
-        }
+
 
         public static void SaveCustomerToFile(string accName, string accPass, Customer.MembershipTier tier)
         {
             var path = GetPathToCustomersFile();
-            var newCustomer = CreateCustomer(accName, accPass, tier);
+            var newCustomer = Customer.CreateCustomer(accName, accPass, tier);
             var customerList = GetCustomersFromFile();
             customerList.Add(newCustomer);
             var customerArr = new string[customerList.Count];

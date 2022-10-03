@@ -8,6 +8,11 @@ public class GoldMember : Customer
     }
     public override string ToString()
     {
-        return $"{base.ToString()}, Tier: Gold";
+        var returnString = $"{base.ToString()}, Tier: Gold, Cart: ";
+        foreach (var product in ShoppingCart)
+        {
+            returnString += product.ToString();
+        }
+        return returnString;
     }
 }

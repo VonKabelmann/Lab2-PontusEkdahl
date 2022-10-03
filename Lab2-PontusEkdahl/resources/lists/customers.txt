@@ -1,3 +1,4 @@
-Name: Knatte, Password: 123, Tier: Bronze
-Name: Fnatte, Password: 321, Tier: Silver
-Name: Tjatte, Password: 213, Tier: Gold
+Name: Knatte, Password: 123, Tier: Basic, Cart: 
+Name: Fnatte, Password: 321, Tier: Bronze, Cart: 
+Name: Tjatte, Password: 213, Tier: Silver, Cart: 
+Name: Pontus, Password: pw, Tier: Gold, Cart:
