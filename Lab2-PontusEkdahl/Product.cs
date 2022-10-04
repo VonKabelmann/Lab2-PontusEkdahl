@@ -8,7 +8,7 @@ namespace Lab2_PontusEkdahl
 {
     public class Product
     {
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         private double _price;
 
@@ -21,15 +21,17 @@ namespace Lab2_PontusEkdahl
                     case Currencies.SEK:
                         return _price;
                     case Currencies.USD:
-                        return _price * 0.09;
+                        return Math.Round(_price * 0.09, 2);
                     case Currencies.GBP:
-                        return _price * 0.08;
+                        return Math.Round(_price * 0.08, 2);
                 }
                 return _price;
 
             }
             set { _price = value; }
         }
+
+        public string Description { get; private set; }
 
         public enum Currencies
         {
@@ -40,19 +42,24 @@ namespace Lab2_PontusEkdahl
 
         public Currencies Currency { get; set; }
 
-        public Product(string name, double price)
+        public Product(string name, double price, string description)
         {
             Name = name;
             Price = price;
+            Description = description;
             Currency = Currencies.SEK;
         }
 
         public override string ToString()
         {
-            return $"Product: {Name}, Price: {Price.ToString("0.00")}" +
-                   $"{(Currency == Currencies.SEK ? "kr" : string.Empty)}" +
-                   $"{(Currency == Currencies.GBP ? "£" : string.Empty)}" +
-                   $"{(Currency == Currencies.USD ? "$" : string.Empty)}";
+            return $"{Name}, Price: {Price.ToString("0.00")}" + GetCurrencySymbol(Currency);
+        }
+
+        public static string GetCurrencySymbol(Currencies currency)
+        {
+            return $"{(currency == Currencies.SEK ? "kr" : string.Empty)}" +
+                   $"{(currency == Currencies.GBP ? "£" : string.Empty)}" +
+                   $"{(currency == Currencies.USD ? "$" : string.Empty)}";
         }
 
         public double GetPriceInCurrency(string currency)

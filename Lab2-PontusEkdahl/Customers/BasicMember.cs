@@ -8,10 +8,14 @@ public class BasicMember : Customer
     }
     public override string ToString()
     {
-        var returnString = $"{base.ToString()}, Tier: Basic, Cart: ";
-        foreach (var product in ShoppingCart)
+        var returnString = $"{base.ToString()}, Tier: Basic";
+        if (ShoppingCart.Count != 0)
         {
-            returnString += product.ToString();
+            returnString += ", Cart: ";
+            foreach (var product in ShoppingCart)
+            {
+                returnString += $"*{product.ToString()}";
+            }
         }
         return returnString;
     }

@@ -9,10 +9,14 @@ public class BronzeMember : Customer
 
     public override string ToString()
     {
-        var returnString = $"{base.ToString()}, Tier: Bronze, Cart: ";
-        foreach (var product in ShoppingCart)
+        var returnString = $"{base.ToString()}, Tier: Bronze";
+        if (ShoppingCart.Count != 0)
         {
-            returnString += product.ToString();
+            returnString += ", Cart: ";
+            foreach (var product in ShoppingCart)
+            {
+                returnString += $"*{product.ToString()}";
+            }
         }
         return returnString;
     }
