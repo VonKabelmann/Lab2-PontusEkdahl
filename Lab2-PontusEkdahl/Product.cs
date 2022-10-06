@@ -8,7 +8,12 @@ namespace Lab2_PontusEkdahl
 {
     public class Product
     {
+        /*
+         * =============================== PROPERTIES & CONSTRUCTOR =================================
+         */
         public string Name { get; private set; }
+
+        public string PluralName { get; private set; }
 
         private double _price;
 
@@ -33,6 +38,8 @@ namespace Lab2_PontusEkdahl
 
         public string Description { get; private set; }
 
+        public Currencies Currency { get; set; }
+
         public enum Currencies
         {
             SEK,
@@ -40,19 +47,22 @@ namespace Lab2_PontusEkdahl
             GBP
         }
 
-        public Currencies Currency { get; set; }
+        
 
-        public Product(string name, double price, string description)
+        public Product(string name, string pluralName, double price, string description)
         {
             Name = name;
             Price = price;
             Description = description;
             Currency = Currencies.SEK;
+            PluralName = pluralName;
         }
-
+        /*
+         * =================================== CLASS METHODS ====================================
+         */
         public override string ToString()
         {
-            return $"{Name}, Price: {Price.ToString("0.00")}" + GetCurrencySymbol(Currency);
+            return $"{Name}, Price: {Price:0.00}" + GetCurrencySymbol(Currency);
         }
 
         public static string GetCurrencySymbol(Currencies currency)

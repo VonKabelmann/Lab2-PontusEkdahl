@@ -13,7 +13,7 @@ namespace Lab2_PontusEkdahl
 {
     public static class Menu
     {
-        public enum MenuItems
+        public enum MenuItems // enum för menyval
         {
             Login,
             Register,
@@ -26,37 +26,43 @@ namespace Lab2_PontusEkdahl
             NotSelected
         }
 
-        private static List<Product> ProductStock = new List<Product>()
+        private static List<Product> ProductStock = new List<Product>() // alla produkter som erbjuds
         {
-            new Product("Lamp Oil", 34.99,
+            new Product("Canister of Lamp Oil", "Canisters of Lamp Oil", 34.99,
                 "To light the way in the dark of night."),
-            
-            new Product("Oil Lamp", 129.99,
+
+            new Product("Big Round Bomb", "Big Round Bombs", 49.99,
+                "Best way to rid your path of any pesky boulders."),
+
+            new Product("Length of Rope", "Length's of Rope", 19.99,
+                "You can never have too much rope!"),
+
+            new Product("Oil Lamp", "Oil Lamps", 129.99,
                 "Genie not included."),
 
-            new Product("Potentially Flying Carpet", 899.99,
+            new Product("Potentially Flying Carpet", "Potentially Flying Carpets", 899.99,
                 "It might fly. It might not. Buy at your own risk."),
 
-            new Product("Magic(?) Flute", 399.99,
+            new Product("Magic(?) Flute", "Magic(?) Flutes", 399.99,
                 "Some say it's magical. Most people don't but SOME do."),
 
-            new Product("Jar of Red Sand", 5.99,
+            new Product("Jar of Red Sand", "Jars of Red Sand", 5.99,
                 "Looks pretty cool, but otherwise completely useless."),
 
-            new Product("Assorted Spices", 19.99,
+            new Product("Bag of Assorted Spices", "Bags of Assorted Spices", 19.99,
                 "For when you're tired of bland tasting food."),
 
-            new Product("Snake Oil", 14.99,
+            new Product("Vial of Snake Oil", "Vials of Snake Oil", 14.99,
                 "Literally snake oil.")
         };
-        private static readonly List<Option> StartOptions = new List<Option>()
+        private static readonly List<Option> StartMenuOptions = new List<Option>() // menyval
         {
             new Option("Login", MenuItems.Login),
             new Option("Register", MenuItems.Register),
             new Option("Exit program", MenuItems.Exit)
         };
 
-        private static readonly List<Option> MainOptions = new List<Option>()
+        private static readonly List<Option> MainMenuOptions = new List<Option>() // menyval
         {
             new Option("Shop", MenuItems.Shop),
             new Option("Check cart", MenuItems.Cart),
@@ -70,17 +76,17 @@ namespace Lab2_PontusEkdahl
         public static void StartMenu()
         {
             var index = 0;
-            var shutDown = false;
+            var nextMenu = MenuItems.NotSelected;
             ConsoleKeyInfo keyInfo;
-            while (true)
+            while (nextMenu != MenuItems.Exit)
             {
-                var nextMenu = MenuItems.NotSelected;
-                PrintMenu("\\menutexts\\startmenu.txt", StartOptions, StartOptions[index]);
-                keyInfo = Console.ReadKey();
+                nextMenu = MenuItems.NotSelected;
+                PrintMenu("\\menutexts\\startmenu.txt", StartMenuOptions, StartMenuOptions[index]);
+                keyInfo = Console.ReadKey(true);
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.DownArrow:
-                        if (index < StartOptions.Count - 1)
+                        if (index < StartMenuOptions.Count - 1)
                         {
                             index++;
                         }
@@ -92,7 +98,7 @@ namespace Lab2_PontusEkdahl
                         }
                         break;
                     case ConsoleKey.Enter:
-                        nextMenu = StartOptions[index].MenuItem;
+                        nextMenu = StartMenuOptions[index].MenuItem;
                         break;
                 }
 
@@ -104,16 +110,6 @@ namespace Lab2_PontusEkdahl
                     case MenuItems.Register:
                         RegisterMenu();
                         break;
-                    case MenuItems.Exit:
-                        shutDown = true;
-                        break;
-                    default:
-                        break;
-                }
-
-                if (shutDown)
-                {
-                    break;
                 }
             }
         }
@@ -132,25 +128,22 @@ namespace Lab2_PontusEkdahl
             inputName = Console.ReadLine();
             if (customerList.All(customer => customer.Name.ToLower() != inputName.ToLower()))
             {
-                Console.Clear();
-                Console.WriteLine("Username does not exist.");
-                Thread.Sleep(1500);
+                DisplayMessage("Username does not exist.");
                 return;
             }
 
-            var currentUser = customerList.Single(customer => customer.Name.ToLower() == inputName.ToLower());
+            var currentUser = customerList.Find(customer => customer.Name.ToLower() == inputName.ToLower());
 
             Console.Write("Please input your password: ");
             inputPassword = Console.ReadLine();
-            if (currentUser.Password == inputPassword)
+
+            if (currentUser.VerifyPassword(inputPassword))
             {
                 MainMenu(currentUser);
             }
             else
             {
-                Console.Clear();
-                Console.WriteLine("Invalid password!");
-                Thread.Sleep(1500);
+                DisplayMessage("Invalid password!");
             }
 
         }
@@ -168,9 +161,7 @@ namespace Lab2_PontusEkdahl
                 || String.IsNullOrEmpty(inputName)
                 || !Regex.IsMatch(inputName, @"^[a-zA-Z0-9]+$"))
             {
-                Console.Clear();
-                Console.WriteLine("Name is not available or empty.");
-                Thread.Sleep(1500);
+                DisplayMessage("Name is not available or empty.");
                 return;
             }
 
@@ -179,9 +170,7 @@ namespace Lab2_PontusEkdahl
             if (String.IsNullOrEmpty(inputPassword) ||
                 !Regex.IsMatch(inputPassword, @"^[a-zA-Z0-9]+$"))
             {
-                Console.Clear();
-                Console.WriteLine("Password is empty or contains forbidden characters.");
-                Thread.Sleep(1500);
+                DisplayMessage("Password is empty or contains forbidden characters.");
                 return;
             }
 
@@ -190,24 +179,57 @@ namespace Lab2_PontusEkdahl
             var tier = RegisterTier();
             SaveCustomerToFile(inputName, inputPassword, tier);
         }
+        public static bool CheckIfNameExists(string input)
+        {
+            var customerList = GetCustomersFromFile();
+            var inputExists = customerList.Any(customer => customer.Name.ToLower() == input.ToLower());
+            return inputExists;
+        }
+        public static Customer.MembershipTier RegisterTier()
+        {
+            var tier = Customer.MembershipTier.Unassigned;
+            while (tier == Customer.MembershipTier.Unassigned)
+            {
+                var keyInfo = Console.ReadKey(true);
+                switch (keyInfo.Key)
+                {
+                    case ConsoleKey.N:
+                        tier = Customer.MembershipTier.Basic;
+                        break;
+                    case ConsoleKey.B:
+                        tier = Customer.MembershipTier.Bronze;
+                        break;
+                    case ConsoleKey.S:
+                        tier = Customer.MembershipTier.Silver;
+                        break;
+                    case ConsoleKey.G:
+                        tier = Customer.MembershipTier.Gold;
+                        break;
+                }
+            }
+            return tier;
+        }
         /*
          * ======================================= MAIN MENU ===========================================
          */
         public static void MainMenu(Customer currentUser)
         {
             var index = 0;
-            var shutDown = false;
+            var nextMenu = MenuItems.NotSelected;
             ConsoleKeyInfo keyInfo;
-            while (true)
+            while (nextMenu != MenuItems.Logout)
             {
-                var nextMenu = MenuItems.NotSelected;
-                PrintMenu("\\menutexts\\mainmenu.txt", MainOptions, MainOptions[index]);
+                nextMenu = MenuItems.NotSelected;
+                PrintMenu("\\menutexts\\mainmenu.txt", MainMenuOptions, MainMenuOptions[index]);
+
                 Console.WriteLine($"\nLogged in as {currentUser.Name}");
-                keyInfo = Console.ReadKey();
+                Console.WriteLine($"Tier: {currentUser.GetTypeAsString()}");
+
+                keyInfo = Console.ReadKey(true);
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.DownArrow:
-                        if (index < MainOptions.Count - 1)
+                        if (index < MainMenuOptions.Count - 1)
                         {
                             index++;
                         }
@@ -219,17 +241,17 @@ namespace Lab2_PontusEkdahl
                         }
                         break;
                     case ConsoleKey.Enter:
-                        nextMenu = MainOptions[index].MenuItem;
+                        nextMenu = MainMenuOptions[index].MenuItem;
                         break;
                 }
 
                 switch (nextMenu)
                 {
                     case MenuItems.Shop:
-                        currentUser.ShoppingCart.AddRange(ShopMenu());
+                        currentUser.ShoppingCart = ShopMenu(currentUser.ShoppingCart);
                         break;
                     case MenuItems.Cart:
-                        CartMenu(currentUser.ShoppingCart);
+                        CartMenu(currentUser);
                         break;
                     case MenuItems.Currency:
                         var newCurrency = CurrencyMenu();
@@ -237,18 +259,11 @@ namespace Lab2_PontusEkdahl
                         ChangeCurrencyInList(newCurrency, currentUser.ShoppingCart);
                         break;
                     case MenuItems.Checkout:
-                        CheckoutMenu(currentUser);
+                        if (CheckoutMenu(currentUser))
+                        {
+                            currentUser.ShoppingCart.Clear();
+                        }
                         break;
-                    case MenuItems.Logout:
-                        shutDown = true;
-                        break;
-                    default:
-                        break;
-                }
-
-                if (shutDown)
-                {
-                    break;
                 }
             }
         }
@@ -256,15 +271,14 @@ namespace Lab2_PontusEkdahl
          * ======================================= SHOP ===============================================
          */
 
-        public static List<Product> ShopMenu()
+        public static List<Product> ShopMenu(List<Product> cart)
         {
             var index = 0;
-            var cart = new List<Product>();
             var keyInfo = new ConsoleKeyInfo();
             while (keyInfo.Key != ConsoleKey.X)
             {
                 PrintMenu("\\menutexts\\shopmenu.txt", ProductStock, ProductStock[index]);
-                keyInfo = Console.ReadKey();
+                keyInfo = Console.ReadKey(true);
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.DownArrow:
@@ -281,7 +295,14 @@ namespace Lab2_PontusEkdahl
                         break;
                     case ConsoleKey.Enter:
                         var amount = BuyProduct(ProductStock[index]);
-                        AddProductsToCart(ref cart, ProductStock[index], amount);
+                        if (amount + cart.Count(prod => prod == ProductStock[index]) > 10)
+                        {
+                            DisplayMessage("We don't have that much in stock!");
+                        }
+                        else
+                        {
+                            AddProductsToCart(ref cart, ProductStock[index], amount);
+                        }
                         break;
                 }
             }
@@ -293,21 +314,20 @@ namespace Lab2_PontusEkdahl
             var amount = 0;
             Console.Clear();
             Console.WriteLine($"Ah! So you're interested in {product.Name}?\n");
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine(product.Description + "\n");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine($"That will be {(product.Price).ToString("0.00")}{Product.GetCurrencySymbol(product.Currency)}\n");
 
-        Console.Write("Enter amount you want to buy: ");
+            Console.WriteLine($"That will be {(product.Price).ToString("0.00")}{Product.GetCurrencySymbol(product.Currency)} per {product.Name}\n");
+
+            Console.Write("Enter amount you want to buy: ");
             if (!int.TryParse(Console.ReadLine(), out amount))
             {
-                Console.Clear();
-                Console.WriteLine("Invalid input! Enter amount in integers ONLY!");
-                Thread.Sleep(1500);
+                DisplayMessage("Invalid input! Enter amount in integers ONLY!");
             }
             return amount;
         }
-
         public static void AddProductsToCart(ref List<Product> cart, Product product, int amount)
         {
             for (int i = 0; i < amount; i++)
@@ -326,7 +346,7 @@ namespace Lab2_PontusEkdahl
             while (keyInfo.Key != ConsoleKey.Enter)
             {
                 PrintMenu(currencyArr, currencyArr[index]);
-                keyInfo = Console.ReadKey();
+                keyInfo = Console.ReadKey(true);
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.DownArrow:
@@ -354,73 +374,83 @@ namespace Lab2_PontusEkdahl
             }
         }
         /*
-         * ============================================= CART MENU ===========================================================
+         * ================================================ CART MENU ===========================================================
          */
-        public static void CartMenu(List<Product> cart)
+        public static void CartMenu(Customer customer)
         {
-            Console.Clear();
-            Console.WriteLine("Your cart currently contains: \n");
-            foreach (var stockProd in ProductStock)
+            if (customer.ShoppingCart.Count == 0)
             {
-                var amount = cart.Count(cartProd => cartProd == stockProd);
-                if (amount > 0)
-                {
-                    Console.WriteLine($"\nYou have {amount} {stockProd}");
-                    Console.WriteLine(
-                        $"Total price of your {stockProd.Name}: {(stockProd.Price * amount).ToString("0.00")}" +
-                        Product.GetCurrencySymbol(stockProd.Currency));
-                }
+                Menu.DisplayMessage("Your cart is empty!");
+                return;
             }
+            customer.ViewCart();
             Console.WriteLine("\nPress ANY key to return to main menu.");
-            Console.ReadKey();
+            Console.ReadKey(true);
         }
         /*
          * ============================================= CHECKOUT MENU ========================================================
          */
-        public static void CheckoutMenu(Customer currentUser)
+        public static bool CheckoutMenu(Customer currentUser)
         {
-            var sumOfPrice = currentUser.ShoppingCart
+            var distinctCart = currentUser.ShoppingCart.Distinct();
+            var keyInfo = new ConsoleKeyInfo();
+            var totalPrice = currentUser.ShoppingCart
                 .Sum(p => p.Price);
-            var currency = ProductStock.First().Currency;
+            var discountedPrice = totalPrice * currentUser.CalculateDiscount();
+            var amountDiscounted = totalPrice - discountedPrice;
 
-            Console.Clear();
-            Console.WriteLine($"The sum of your items is {(sumOfPrice).ToString("0.00")}" + Product.GetCurrencySymbol(currency));
-            Console.ReadKey();
-        }
-        public static bool CheckIfNameExists(string input)
-        {
-            var customerList = GetCustomersFromFile();
-            var inputExists = customerList.Any(customer => customer.Name.ToLower() == input.ToLower());
-            return inputExists;
-        }
-
-
-        public static Customer.MembershipTier RegisterTier()
-        {
-            ConsoleKeyInfo keyInfo;
-            var tier = Customer.MembershipTier.Unassigned;
-            while (tier == Customer.MembershipTier.Unassigned)
+            if (currentUser.ShoppingCart.Count == 0)
             {
-                keyInfo = Console.ReadKey(true);
-                switch (keyInfo.Key)
-                {
-                    case ConsoleKey.N:
-                        tier = Customer.MembershipTier.Basic;
-                        break;
-                    case ConsoleKey.B:
-                        tier = Customer.MembershipTier.Bronze;
-                        break;
-                    case ConsoleKey.S:
-                        tier = Customer.MembershipTier.Silver;
-                        break;
-                    case ConsoleKey.G:
-                        tier = Customer.MembershipTier.Gold;
-                        break;
-                }
+                DisplayMessage("Your cart is empty!");
+                return false;
             }
 
-            return tier;
+            Console.Clear();
+
+            if (currentUser is not BasicMember)
+            {
+                Console.WriteLine($"\nWow! Because you're a {currentUser.GetTypeAsString()} Member you get a {currentUser.Discount}% discount!\n" +
+                                  $"You just saved {amountDiscounted:0.00}{Product.GetCurrencySymbol(ProductStock.First().Currency)}!\n" +
+                                  $"The price before your discount was {totalPrice:0.00}{Product.GetCurrencySymbol(ProductStock.First().Currency)}");
+            }
+
+            Console.WriteLine($"\nThe total price is: {discountedPrice:0.00}{Product.GetCurrencySymbol(ProductStock.First().Currency)}\n\n" +
+                              $"PRESS 'Y' TO CONFIRM PURCHASE\n" +
+                              $"PRESS 'N' TO EXIT WITHOUT PURCHASING");
+
+            while (keyInfo.Key != ConsoleKey.Y && keyInfo.Key != ConsoleKey.N)
+            {
+                keyInfo = Console.ReadKey(true);
+            }
+
+            if (keyInfo.Key == ConsoleKey.Y)
+            {
+                DisplayMessage($"Thank you, {currentUser.Name} for shopping with us!");
+                DisplayMessage("The shop has been restocked!");
+                if (currentUser.Name.ToLower() == "niklas")
+                {
+                    DisplayMessage("And thank you for being an amazing teacher!");
+                    DisplayMessage("You're the best, Niklas!");
+                    DisplayMessage("(snälla ge mig VG)");
+                }
+                return true;
+            }
+
+            return false;
         }
+        /*
+         * ============================================= GENERAL METHODS ==========================================================
+         */
+        public static void DisplayMessage(string message)
+        {
+            Console.Clear();
+            Console.WriteLine(message);
+            Thread.Sleep(1500);
+        }
+        
+        /*
+         * ========================================== RESOURCE/FILE METHODS ================================================
+         */
         public static List<Customer> GetCustomersFromFile()
         {
             var path = GetPathToCustomersFile();
@@ -436,8 +466,6 @@ namespace Lab2_PontusEkdahl
             }
             return customerList;
         }
-
-
 
         public static void SaveCustomerToFile(string accName, string accPass, Customer.MembershipTier tier)
         {
@@ -466,8 +494,10 @@ namespace Lab2_PontusEkdahl
             var resourcesPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"..\..\..\resources"));
             return resourcesPath;
         }
-
-        public static void PrintMenu(string pathToFile, List<Option> options, Option selected)
+        /*
+         * ========================================= PRINTMENU METHODS ============================================
+         */
+        public static void PrintMenu(string pathToFile, List<Option> options, Option selected) // FÖR INTRO OCH MAIN MENU
         {
             Console.Clear();
 
@@ -487,7 +517,7 @@ namespace Lab2_PontusEkdahl
             }
         }
 
-        public static void PrintMenu(string pathToFile, List<Product> productStock, Product selected)
+        public static void PrintMenu(string pathToFile, List<Product> productStock, Product selected) // FÖR SHOP MENU
         {
             Console.Clear();
 
@@ -507,7 +537,7 @@ namespace Lab2_PontusEkdahl
             }
         }
 
-        public static void PrintMenu(Product.Currencies[] currencies, Product.Currencies selected)
+        public static void PrintMenu(Product.Currencies[] currencies, Product.Currencies selected) // FÖR CURRENCIES MENU
         {
             Console.Clear();
 

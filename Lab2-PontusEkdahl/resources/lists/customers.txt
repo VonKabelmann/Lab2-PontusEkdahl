@@ -2,3 +2,4 @@ Name: Knatte, Password: 123, Tier: Basic
 Name: Fnatte, Password: 321, Tier: Bronze
 Name: Tjatte, Password: 213, Tier: Silver
 Name: Pontus, Password: pww, Tier: Gold
+Name: Niklas, Password: ITHS, Tier: Gold
