@@ -61,23 +61,5 @@ namespace Lab2_PontusEkdahl
                    $"{(currency == Currencies.GBP ? "£" : string.Empty)}" +
                    $"{(currency == Currencies.USD ? "$" : string.Empty)}";
         }
-
-        public double GetPriceInCurrency(string currency)
-        {
-            double result;
-            switch (currency)
-            {
-                case "dollar":
-                    result = Price * 0.09;
-                    break;
-                case "pounds":
-                    result = Price * 0.08;
-                    break;
-                default:
-                    result = Price;
-                    break;
-            }
-            return Math.Round(result, 2);
-        }
     }
 }

@@ -30,12 +30,15 @@ namespace Lab2_PontusEkdahl
         {
             new Product("Lamp Oil", 34.99,
                 "To light the way in the dark of night."),
+            
+            new Product("Oil Lamp", 129.99,
+                "Genie not included."),
 
             new Product("Potentially Flying Carpet", 899.99,
-                "It might fly. It might not. Buy it if you want to find out."),
+                "It might fly. It might not. Buy at your own risk."),
 
             new Product("Magic(?) Flute", 399.99,
-                "Some say it's magical. Most don't but SOME do."),
+                "Some say it's magical. Most people don't but SOME do."),
 
             new Product("Jar of Red Sand", 5.99,
                 "Looks pretty cool, but otherwise completely useless."),
@@ -44,7 +47,7 @@ namespace Lab2_PontusEkdahl
                 "For when you're tired of bland tasting food."),
 
             new Product("Snake Oil", 14.99,
-                "Literally just snake oil.")
+                "Literally snake oil.")
         };
         private static readonly List<Option> StartOptions = new List<Option>()
         {
@@ -282,7 +285,6 @@ namespace Lab2_PontusEkdahl
                         break;
                 }
             }
-
             return cart;
         }
 
@@ -294,7 +296,7 @@ namespace Lab2_PontusEkdahl
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine(product.Description + "\n");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine($"That will be {(product.Price).ToString("0.00")}\n");
+            Console.WriteLine($"That will be {(product.Price).ToString("0.00")}{Product.GetCurrencySymbol(product.Currency)}\n");
 
         Console.Write("Enter amount you want to buy: ");
             if (!int.TryParse(Console.ReadLine(), out amount))
@@ -369,7 +371,6 @@ namespace Lab2_PontusEkdahl
                         Product.GetCurrencySymbol(stockProd.Currency));
                 }
             }
-
             Console.WriteLine("\nPress ANY key to return to main menu.");
             Console.ReadKey();
         }

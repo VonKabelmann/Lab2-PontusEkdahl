@@ -8,23 +8,12 @@ namespace Lab2_PontusEkdahl.Customers
 {
     public abstract class Customer
     {
-        private string _name;
-
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public string Name { get; private set; }
 
         public string Password { get; private set; }
 
-        private List<Product> _shoppingCart;
+        public List<Product> ShoppingCart { get; set; }
 
-        public List<Product> ShoppingCart
-        {
-            get { return _shoppingCart; }
-            set { _shoppingCart = value; }
-        }
         public Customer(string name, string password)
         {
             Name = name;
@@ -44,8 +33,7 @@ namespace Lab2_PontusEkdahl.Customers
 
         public override string ToString()
         {
-            var returnString = $"Name: {Name}, Password: {Password}";
-            return returnString;
+            return $"Name: {Name}, Password: {Password}";
         }
 
         public static MembershipTier GetTierFromString(string tier)
