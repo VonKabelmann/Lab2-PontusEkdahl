@@ -302,6 +302,8 @@ namespace Lab2_PontusEkdahl
                         else
                         {
                             AddProductsToCart(ref cart, ProductStock[index], amount);
+                            DisplayMessage($"{amount} {(amount == 1 ? ProductStock[index].Name : ProductStock[index].PluralName)} " +
+                                           $"added to your cart.");
                         }
                         break;
                 }
@@ -429,9 +431,11 @@ namespace Lab2_PontusEkdahl
                 DisplayMessage("The shop has been restocked!");
                 if (currentUser.Name.ToLower() == "niklas")
                 {
+                    Console.ForegroundColor = ConsoleColor.Green;
                     DisplayMessage("And thank you for being an amazing teacher!");
                     DisplayMessage("You're the best, Niklas!");
-                    DisplayMessage("(snälla ge mig VG)");
+                    DisplayMessage("(snälla ge mig VG :D)");
+                    Console.ForegroundColor = ConsoleColor.Gray;
                 }
                 return true;
             }
